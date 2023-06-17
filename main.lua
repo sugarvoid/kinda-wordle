@@ -35,6 +35,17 @@ local roundWord = {
     "E"
 }
 
+local wordDisplay = {
+    "_",
+    "_",
+    "_",
+    "_",
+    "_"
+}
+
+local freeGuesses = 3
+local allowedMisses = 5
+
 function love.load()
     font = love.graphics.newFont("monogram.ttf", 60)
     love.graphics.setFont(font)
@@ -44,20 +55,36 @@ end
 
 
 function love.draw()
-  local x = 50 -- Starting x-coordinate for the labels
-  local y = 50 -- Starting y-coordinate for the labels
-  
-  for i, letter in ipairs(letters) do
-    if letter.is_used then
-      love.graphics.setColor(255, 0, 0) -- Red color for used letters
-    else
-      love.graphics.setColor(255, 255, 255) -- White color for used letters
-    end
-    
-    love.graphics.print(letter.value, x, y)
-    x = x + 25 -- Increase the x-coordinate for the next label
-  end
+    drawLetters()
+    drawWordDisplay()
+
 end
+
+function drawLetters()
+    local l_x = 50 -- Starting x-coordinate for the labels
+    local l_y = 400 -- Starting y-coordinate for the labels
+  
+    for i, letter in ipairs(letters) do
+        if letter.is_used then
+          love.graphics.setColor(255, 0, 0) -- Red color for used letters
+        else
+          love.graphics.setColor(255, 255, 255) -- White color for used letters
+        end
+
+        love.graphics.print(letter.value, l_x, l_y)
+        l_x = l_x + 25 -- Increase the x-coordinate for the next label
+    end
+end
+
+function drawWordDisplay()
+    local d_x = 10 
+    local d_y = 50 
+    for i, char in ipairs(wordDisplay) do
+        love.graphics.print(char, d_x, d_y)
+        d_x = d_x + 25 -- Increase the x-coordinate for the next label
+    end
+end
+
 
 function resetLetters()
     for i, letter in ipairs(letters) do
@@ -74,11 +101,16 @@ function love.keypressed(key, scancode)
                 break
             else
                 print("setting letter to used")
+                freeGuesses = freeGuesses - 1
                 letter.is_used = true
                 break
             end
         end
     end
+end
+
+function checkWordForLetter(letter)
+    -- body
 end
 
 function loadWord(word)
