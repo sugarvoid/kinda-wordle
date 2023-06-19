@@ -1,3 +1,6 @@
+
+--main.lua
+
 local letters = {
   {value = "A", is_used = false},
   {value = "B", is_used = false},
@@ -45,19 +48,19 @@ local wordDisplay = {
 
 local freeGuesses = 3
 local allowedMisses = 5
+local current_word
 
 function love.load()
+    getRandomWord()
     font = love.graphics.newFont("monogram.ttf", 60)
     love.graphics.setFont(font)
-    loadWord("grate")
-    print(roundWord[1])
+    startNewRound()
 end
 
 
 function love.draw()
     drawLetters()
     drawWordDisplay()
-
 end
 
 function drawLetters()
@@ -85,6 +88,10 @@ function drawWordDisplay()
     end
 end
 
+
+function startNewRound()
+    loadWord(getRandomWord())
+end
 
 function resetLetters()
     for i, letter in ipairs(letters) do
@@ -120,4 +127,17 @@ function loadWord(word)
     end
 end
 
+function getRandomWord()
+    math.randomseed(os.time())
+    local _ran = math.random(1,5757)
+    local count = 0
+    local _word 
+    for line in love.filesystem.lines("sgb-words.txt") do
+        count = count + 1
+        if count == _ran then
+            _word = line
+        end
+    end
+    return _word
+end
 
