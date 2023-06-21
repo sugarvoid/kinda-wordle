@@ -30,12 +30,13 @@ local letters = {
   {value = "Z", is_used = false}
 }
 
+
 local roundWord = {
-    "S",
-    "T",
-    "O",
-    "N",
-    "E"
+    {value = "S", is_showing = false},
+    {value = "T", is_showing = false},
+    {value = "O", is_showing = false},
+    {value = "N", is_showing = false},
+    {value = "E", is_showing = false}
 }
 
 local wordDisplay = {
@@ -46,6 +47,7 @@ local wordDisplay = {
     "_"
 }
 
+local FILLERCHAR = "_"
 local freeGuesses = 3
 local allowedMisses = 5
 local current_word
@@ -82,8 +84,14 @@ end
 function drawWordDisplay()
     local d_x = 10 
     local d_y = 50 
-    for i, char in ipairs(wordDisplay) do
-        love.graphics.print(char, d_x, d_y)
+
+    for i, char in ipairs(roundWord) do
+        if char.is_showing then
+            love.graphics.print(char.value, d_x, d_y)
+        else
+            love.graphics.print(FILLERCHAR, d_x, d_y)
+        end
+        
         d_x = d_x + 25 -- Increase the x-coordinate for the next label
     end
 end
@@ -102,28 +110,46 @@ end
 function love.keypressed(key, scancode)
     --print(key:upper())
     for i, letter in ipairs(letters) do
-        if key:upper() == letter.value then
+        if key:upper() == letter.value:upper() then
+            print(letter.value)
+
             if letter.is_used == true then
                 print("letter already used")
+
                 break
             else
                 print("setting letter to used")
                 freeGuesses = freeGuesses - 1
                 letter.is_used = true
+                checkWordForLetter(key)
                 break
             end
         end
     end
 end
 
-function checkWordForLetter(letter)
-    -- body
-end
+
 
 function loadWord(word)
     for i = 1, #word do
         local c = word:sub(i,i):upper()
-        roundWord[i] = c
+        roundWord[i].value = c
+    end
+
+
+    for i, letter in ipairs(roundWord) do
+        print(letter.value)
+    end
+end
+
+function checkWordForLetter(letter)
+    for i = 1, #roundWord do
+        if roundWord[i].value == letter:lower() then
+            print("ding!!")
+            roundWord[i].is_showing = true
+        else
+            print("wrong!!")
+        end
     end
 end
 
