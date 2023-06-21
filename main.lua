@@ -1,6 +1,9 @@
 
 --main.lua
 
+require("lib.color")
+
+local gamestate -- 0 = menu, 1 = game, 2 = gameover
 local letters = {
   {value = "A", is_used = false},
   {value = "B", is_used = false},
@@ -53,7 +56,7 @@ local allowedMisses = 5
 local current_word
 
 function love.load()
-    getRandomWord()
+    gamestate = 0 
     font = love.graphics.newFont("monogram.ttf", 60)
     love.graphics.setFont(font)
     startNewRound()
@@ -61,6 +64,7 @@ end
 
 
 function love.draw()
+    changeBgColor("#000000")
     drawLetters()
     drawWordDisplay()
 end
@@ -71,9 +75,9 @@ function drawLetters()
   
     for i, letter in ipairs(letters) do
         if letter.is_used then
-          love.graphics.setColor(255, 0, 0) -- Red color for used letters
+            changeFontColor("#8F8F8F")
         else
-          love.graphics.setColor(255, 255, 255) -- White color for used letters
+            changeFontColor("#FFFFFF")
         end
 
         love.graphics.print(letter.value, l_x, l_y)
@@ -108,6 +112,13 @@ function resetLetters()
 end
 
 function love.keypressed(key, scancode)
+    if key == "escape" then
+        if gamestate ~= 0 then
+            gamestate = 0
+        else
+            love.event.quit()
+        end
+    end
     --print(key:upper())
     for i, letter in ipairs(letters) do
         if key:upper() == letter.value:upper() then
@@ -135,21 +146,29 @@ function loadWord(word)
         local c = word:sub(i,i):upper()
         roundWord[i].value = c
     end
-
-
-    for i, letter in ipairs(roundWord) do
-        print(letter.value)
-    end
 end
 
 function checkWordForLetter(letter)
     for i = 1, #roundWord do
-        if roundWord[i].value == letter:lower() then
-            print("ding!!")
+        if roundWord[i].value == letter:upper() then
+            --print("ding!!")
             roundWord[i].is_showing = true
         else
-            print("wrong!!")
+            --print("wrong!!")
         end
+    end
+    checkIfWordComplete()
+end
+
+function checkIfWordComplete()
+    if roundWord[1].is_showing == true and 
+        roundWord[2].is_showing == true and
+        roundWord[3].is_showing == true and
+        roundWord[4].is_showing == true and
+        roundWord[5].is_showing == true then
+        print("Word Done!!")
+        return true
+    --startNextRound()
     end
 end
 
@@ -158,10 +177,12 @@ function getRandomWord()
     local _ran = math.random(1,5757)
     local count = 0
     local _word 
+
     for line in love.filesystem.lines("sgb-words.txt") do
         count = count + 1
         if count == _ran then
             _word = line
+            print(_word)
         end
     end
     return _word
