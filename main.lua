@@ -3,6 +3,9 @@
 
 require("lib.color")
 
+local COLOR_DEFAULT
+local COLOR_HIGHLIGHT
+
 local gamestate -- 0 = menu, 1 = game, 2 = gameover
 local letters = {
   {value = "A", is_used = false},
@@ -35,11 +38,11 @@ local letters = {
 
 
 local roundWord = {
-    {value = "S", is_showing = false},
-    {value = "T", is_showing = false},
-    {value = "O", is_showing = false},
-    {value = "N", is_showing = false},
-    {value = "E", is_showing = false}
+    {value = "S", font_color = COLOR_DEFAULT, is_showing = false},
+    {value = "T", font_color = COLOR_DEFAULT, is_showing = false},
+    {value = "O", font_color = COLOR_DEFAULT, is_showing = false},
+    {value = "N", font_color = COLOR_DEFAULT, is_showing = false},
+    {value = "E", font_color = COLOR_DEFAULT, is_showing = false}
 }
 
 local wordDisplay = {
@@ -57,8 +60,9 @@ local current_word
 
 function love.load()
     gamestate = 0 
-    font = love.graphics.newFont("monogram.ttf", 60)
+    font = love.graphics.newFont("monogram.ttf", 44)
     love.graphics.setFont(font)
+    font:setFilter("nearest")
     startNewRound()
 end
 
@@ -81,12 +85,16 @@ function drawLetters()
         end
 
         love.graphics.print(letter.value, l_x, l_y)
+        if l_x >= 400 then
+            l_x = 50
+            l_y = 430
+        end
         l_x = l_x + 25 -- Increase the x-coordinate for the next label
     end
 end
 
 function drawWordDisplay()
-    local d_x = 10 
+    local d_x = 200 
     local d_y = 50 
 
     for i, char in ipairs(roundWord) do
@@ -102,12 +110,16 @@ end
 
 
 function startNewRound()
+    resetLetters()
     loadWord(getRandomWord())
 end
 
 function resetLetters()
     for i, letter in ipairs(letters) do
         letter.is_used = false
+    end
+    for i = 1, #roundWord do
+        roundWord[i].is_showing = false
     end
 end
 
@@ -167,6 +179,7 @@ function checkIfWordComplete()
         roundWord[4].is_showing == true and
         roundWord[5].is_showing == true then
         print("Word Done!!")
+        startNewRound()
         return true
     --startNextRound()
     end
