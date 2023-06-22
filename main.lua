@@ -71,6 +71,7 @@ function love.draw()
     changeBgColor("#000000")
     drawLetters()
     drawWordDisplay()
+    drawMisses()
 end
 
 function drawLetters()
@@ -93,9 +94,21 @@ function drawLetters()
     end
 end
 
+function drawMisses()
+    local d_x = 200
+    local d_y = 140
+    local w = 15
+    local h=15
+
+    for i = 1, allowedMisses do
+        love.graphics.rectangle( "fill", d_x, d_y, w, h)
+        d_x = d_x + 20
+    end
+end
+
 function drawWordDisplay()
-    local d_x = 200 
-    local d_y = 50 
+    local d_x = 200
+    local d_y = 50
 
     for i, char in ipairs(roundWord) do
         if char.is_showing then
@@ -103,7 +116,7 @@ function drawWordDisplay()
         else
             love.graphics.print(FILLERCHAR, d_x, d_y)
         end
-        
+
         d_x = d_x + 25 -- Increase the x-coordinate for the next label
     end
 end
@@ -167,13 +180,16 @@ function checkWordForLetter(letter)
             roundWord[i].is_showing = true
         else
             --print("wrong!!")
+            --TODO: Handle how misses will work 
+            --allowedMisses = allowedMisses - 1
+            print(allowedMisses)
         end
     end
     checkIfWordComplete()
 end
 
 function checkIfWordComplete()
-    if roundWord[1].is_showing == true and 
+    if roundWord[1].is_showing == true and
         roundWord[2].is_showing == true and
         roundWord[3].is_showing == true and
         roundWord[4].is_showing == true and
