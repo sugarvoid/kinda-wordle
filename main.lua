@@ -157,7 +157,14 @@ function love.keypressed(key, scancode)
                 print("setting letter to used")
                 freeGuesses = freeGuesses - 1
                 letter.is_used = true
-                checkWordForLetter(key)
+                if checkWordForLetter(key) then
+                    print("ding!!")
+                else
+                    print("wrong!!")
+                    allowedMisses = allowedMisses - 1
+                end
+                print(allowedMisses)
+                checkIfWordComplete()
                 break
             end
         end
@@ -174,18 +181,18 @@ function loadWord(word)
 end
 
 function checkWordForLetter(letter)
+    has_letter = false
     for i = 1, #roundWord do
         if roundWord[i].value == letter:upper() then
             --print("ding!!")
             roundWord[i].is_showing = true
+            has_letter = true
+            break
         else
-            --print("wrong!!")
-            --TODO: Handle how misses will work 
-            --allowedMisses = allowedMisses - 1
-            print(allowedMisses)
+            has_letter = false
         end
     end
-    checkIfWordComplete()
+    return has_letter
 end
 
 function checkIfWordComplete()
