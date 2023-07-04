@@ -5,8 +5,9 @@ require("lib.color")
 
 local COLOR_DEFAULT
 local COLOR_HIGHLIGHT
+local font
 
-local gamestate -- 0 = menu, 1 = game, 2 = gameover
+local gamestate -- 0 = title, 1 = play, 2 = gameover
 local letters = {
   {value = "A", is_used = false},
   {value = "B", is_used = false},
@@ -38,20 +39,13 @@ local letters = {
 
 
 local roundWord = {
-    {value = "S", font_color = COLOR_DEFAULT, is_showing = false},
-    {value = "T", font_color = COLOR_DEFAULT, is_showing = false},
-    {value = "O", font_color = COLOR_DEFAULT, is_showing = false},
-    {value = "N", font_color = COLOR_DEFAULT, is_showing = false},
-    {value = "E", font_color = COLOR_DEFAULT, is_showing = false}
+    {value = "", font_color = COLOR_DEFAULT, is_showing = false},
+    {value = "", font_color = COLOR_DEFAULT, is_showing = false},
+    {value = "", font_color = COLOR_DEFAULT, is_showing = false},
+    {value = "", font_color = COLOR_DEFAULT, is_showing = false},
+    {value = "", font_color = COLOR_DEFAULT, is_showing = false}
 }
 
-local wordDisplay = {
-    "_",
-    "_",
-    "_",
-    "_",
-    "_"
-}
 
 local FILLERCHAR = "_"
 local freeGuesses = 3
@@ -72,6 +66,10 @@ function love.draw()
     drawLetters()
     drawWordDisplay()
     drawMisses()
+end
+
+function drawTitle()
+    love.graphics.print("Game Title", 50, 200)
 end
 
 function drawLetters()
