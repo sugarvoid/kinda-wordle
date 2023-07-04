@@ -2,10 +2,12 @@
 --main.lua
 
 require("lib.color")
+require("lib.sound")
 
 local COLOR_DEFAULT
 local COLOR_HIGHLIGHT
 local font
+local sounds
 
 local gamestate -- 0 = title, 1 = play, 2 = gameover
 local letters = {
@@ -50,16 +52,16 @@ local roundWord = {
 local FILLERCHAR = "_"
 local freeGuesses = 3
 local allowedMisses = 5
-local current_word
+
 
 function love.load()
-    gamestate = 0 
+    gamestate = 0
     font = love.graphics.newFont("monogram.ttf", 44)
     love.graphics.setFont(font)
     font:setFilter("nearest")
+    sounds = loadSounds()
     startNewRound()
 end
-
 
 function love.draw()
     changeBgColor("#000000")
@@ -119,7 +121,6 @@ function drawWordDisplay()
     end
 end
 
-
 function startNewRound()
     resetLetters()
     loadWord(getRandomWord())
@@ -157,8 +158,10 @@ function love.keypressed(key, scancode)
                 letter.is_used = true
                 if checkWordForLetter(key) then
                     print("ding!!")
+                    playSound(sounds.correct)
                 else
                     print("wrong!!")
+                    playSound(sounds.wrong)
                     allowedMisses = allowedMisses - 1
                 end
                 print(allowedMisses)
@@ -169,8 +172,6 @@ function love.keypressed(key, scancode)
     end
 end
 
-
-
 function loadWord(word)
     for i = 1, #word do
         local c = word:sub(i,i):upper()
@@ -179,10 +180,9 @@ function loadWord(word)
 end
 
 function checkWordForLetter(letter)
-    has_letter = false
+    local has_letter = false
     for i = 1, #roundWord do
         if roundWord[i].value == letter:upper() then
-            --print("ding!!")
             roundWord[i].is_showing = true
             has_letter = true
             break
@@ -202,7 +202,6 @@ function checkIfWordComplete()
         print("Word Done!!")
         startNewRound()
         return true
-    --startNextRound()
     end
 end
 
