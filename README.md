@@ -1,4 +1,4 @@
-# love-hangman
+# love hangman
 - A hangman type game made with Love2D
 
 
